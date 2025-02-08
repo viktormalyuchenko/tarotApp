@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гадания Таро онлайн: получите предсказание бесплатно</title>
+    <meta name="description" content="Бесплатные онлайн гадания на картах Таро.  Выберите расклад, задайте вопрос и получите толкование карт.  Старшие и Младшие Арканы.">
+    <meta name="keywords" content="гадания таро, таро онлайн, гадание на картах таро, расклады таро, толкование карт таро, старшие арканы, младшие арканы, бесплатно">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Мистический Портал Таро</h1>
+            <p>Откройте завесу будущего с помощью древних карт</p>
+        </header>
+
+        <section id="card-of-the-day">
+            <h2>Карта дня</h2>
+            <div id="cotd-container"></div>
+            <div id="cotd-interpretation"></div>
+        </section>
+
+        <section id="tarot-info">
+            <h2>О Таро</h2>
+            <p>Таро — это колода из 78 карт, используемая для гадания и самопознания.  Старшие Арканы представляют собой архетипические образы, а Младшие Арканы отражают повседневные события.</p>
+            <p>Каждая карта имеет своё значение, как в прямом, так и в перевёрнутом положении. Толкование зависит от расклада и контекста вопроса.</p>
+            <p><a href="https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D1%80%D0%BE" target="_blank" rel="noopener noreferrer">Узнать больше о Таро (Википедия)</a></p>
+        </section>
+
+        <main>
+            <div id="loading-indicator" style="display: none; text-align: center;">
+                <p>Загрузка данных карт...</p>
+                <div class="spinner"></div>
+            </div>
+             <div id="error-message" style="display: none; color: red; text-align: center;">
+            </div>
+            <section id="spread-selection">
+                <h2>Выберите расклад:</h2>
+                <select id="spread-type">
+                    <option value="one-card">Одна карта</option>
+                    <option value="three-card">Три карты (Прошлое, Настоящее, Будущее)</option>
+                    <option value="celtic-cross">Кельтский крест (10 карт)</option>
+                </select>
+                <label for="question">Ваш вопрос (необязательно):</label>
+                <textarea id="question" rows="3" placeholder="Задайте свой вопрос..."></textarea>
+                <button id="draw-cards">Тянуть карты</button>
+                <button id="generate-question">Случайный вопрос</button>
+            </section>
+
+            <section id="reading-result">
+                <h2>Результат гадания:</h2>
+                <div id="cards-container">
+                    <!-- Карты будут здесь -->
+                </div>
+                <div id="interpretation">
+                    <!-- Толкования будут здесь -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© <span id="current-year"></span> Мистический Портал Таро. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
