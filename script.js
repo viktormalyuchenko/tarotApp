@@ -110,7 +110,7 @@ function showTab(tabId) {
     }
     //Для таро тоже особый случай
     if(tabId === "tarot" && cardData){
-      restoreReading(); // Восстанавливаем при переключении
+      restoreReading(); // Восстанавливаем расклад
       shuffleDeck();  // "Перемешиваем" карты
     }
       //Добавил скролл к элементу
@@ -133,6 +133,7 @@ function getRandomCards(numCards) {
 }
 
 // Функция отображения карт (с задержкой)
+//  Изменено:  теперь карты изначально рубашкой вверх
 function displayCards(cardIndices, spreadType) {
     const cardsContainer = document.getElementById('cards-container');
     cardsContainer.innerHTML = ''; // Очищаем
@@ -140,16 +141,42 @@ function displayCards(cardIndices, spreadType) {
     cardIndices.forEach((cardIndex, position) => {
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('card');
-        cardDiv.style.backgroundImage = `url(images/${cardIndex}.jpg)`;
-        cardDiv.style.animationDelay = `${position * 0.2}s`; // Добавляем задержку
+        // !!!  Изначально показываем "рубашку"  !!!
+        cardDiv.style.backgroundImage = `url(images/back.jpg)`; //  <--  ИЗМЕНЕНИЕ
+        cardDiv.dataset.cardIndex = cardIndex; //  Сохраняем индекс карты
+        cardDiv.dataset.isReversed = Math.random() < 0.3; // Случайно переворачиваем
+        cardDiv.style.animationDelay = `${position * 0.2}s`;
 
-        const isReversed = Math.random() < 0.3;
-        if (isReversed) {
-            cardDiv.classList.add('reversed');
-        }
-        cardDiv.addEventListener('click', () => showCardInterpretation(cardIndex, isReversed, position, spreadType));
+        // Добавляем обработчик клика для переворота
+        cardDiv.addEventListener('click', flipCard);  //  <--  ИЗМЕНЕНИЕ (отдельная функция)
         cardsContainer.appendChild(cardDiv);
     });
+}
+
+//  НОВАЯ ФУНКЦИЯ:  Переворот карты
+function flipCard(event) {
+    const cardDiv = event.currentTarget; //  Получаем элемент, по которому кликнули
+     // Проверяем, не перевернута ли уже карта
+    if (cardDiv.classList.contains('flipped')) {
+        return; // Если уже перевернута, выходим
+    }
+
+    const cardIndex = parseInt(cardDiv.dataset.cardIndex);
+    const isReversed = cardDiv.dataset.isReversed === 'true'; //  Получаем значение из data
+
+    //  Меняем изображение
+    cardDiv.style.backgroundImage = `url(images/${cardIndex}.jpg)`;
+
+    //  Добавляем/удаляем класс reversed
+    if (isReversed) {
+        cardDiv.classList.add('reversed');
+    } else {
+        cardDiv.classList.remove('reversed'); //  На всякий случай
+    }
+     //Отображаем толкование
+    //Вызываем функцию showCardInterpretation, позицию пока не учитываем
+    showCardInterpretation(cardIndex, isReversed, 0,  document.getElementById('spread-type').value);
+    cardDiv.classList.add('flipped'); //Добавляем класс, чтобы больше не переворачивалась
 }
 
 //  измененная функция showCardInterpretation
@@ -168,14 +195,14 @@ function showCardInterpretation(cardIndex, isReversed, position, spreadType) {
 
     let title = `<h3>${card.name}</h3>`;
     if (spreadType === 'three-card') {
-      const positions = ['Прошлое', 'Настоящее', 'Будущее'];
-      title = `<h3>${positions[position]}: ${card.name}</h3>`;
+        const positions = ['Прошлое', 'Настоящее', 'Будущее'];
+        title = `<h3>${positions[position]}: ${card.name}</h3>`;
     } else if (spreadType === "celtic-cross") {
-      const positions = [
-        "Настоящее", "Препятствие", "Основа", "Прошлое",
-        "Возможности", "Будущее", "Внутреннее состояние", "Внешние влияния", "Надежды и страхи", "Исход"
-      ];
-      title = `<h3>${positions[position]}: ${card.name}</h3>`;
+        const positions = [
+            "Настоящее", "Препятствие", "Основа", "Прошлое",
+            "Возможности", "Будущее", "Внутреннее состояние", "Внешние влияния", "Надежды и страхи", "Исход"
+        ];
+        title = `<h3>${positions[position]}: ${card.name}</h3>`;
     }
 
     cardInterpretationDiv.innerHTML = title;
@@ -219,7 +246,6 @@ function showCardInterpretation(cardIndex, isReversed, position, spreadType) {
     }
 
     interpretationDiv.appendChild(cardInterpretationDiv);
-    // interpretationDiv.scrollIntoView({ behavior: 'smooth' }); //Убрал, теперь скролл в showTab
   }
 
 // Вспомогательная функция для получения заголовков
@@ -244,7 +270,7 @@ function shuffleDeck() {
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('card');
         const randomCardBack = Math.floor(Math.random() * 3);
-        cardDiv.style.backgroundImage = `url(images/back${randomCardBack}.jpg)`;
+        cardDiv.style.backgroundImage = `url(images/back.jpg)`; //  Используем одну рубашку
         cardDiv.style.animation = `shuffle 0.2s ease-in-out ${i * 0.03}s`;
         cardsContainer.appendChild(cardDiv);
     }
@@ -505,9 +531,8 @@ function restoreReading() {
         if (now - readingData.timestamp < maxAge) {
              // Восстанавливаем расклад
             displayCards(readingData.cardIndices, readingData.spreadType);
-            showCardInterpretation(readingData.cardIndices[0], false, 0, readingData.spreadType); //Вызываем для первой карты
-             // Т.к. у нас обработчик на клик, то выводим толкование первой карты.
-             //  Можно сделать иначе
+            // showCardInterpretation(readingData.cardIndices[0], false, 0, readingData.spreadType);
+            //  !!!  УБИРАЕМ ВЫЗОВ showCardInterpretation  !!!
 
             // Устанавливаем выбранный расклад
             document.getElementById('spread-type').value = readingData.spreadType;

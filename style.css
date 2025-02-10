@@ -1,23 +1,22 @@
-/* ... (предыдущий CSS, без изменений) ... */
 /* Общие стили */
 body {
-    font-family: 'Roboto', sans-serif; /* Google Font */
-    background-color: #121212; /* Темный фон */
-    color: #eee; /* Светлый текст */
+    font-family: 'Roboto', sans-serif;
+    background-color: #121212;
+    color: #eee;
     margin: 0;
     padding: 0;
     line-height: 1.6;
   }
   
   .container {
-    max-width: 960px; /*  */
+    max-width: 960px;
     margin: 0 auto;
     padding: 20px;
   }
   
   h1, h2, h3 {
-    font-family: 'Cormorant Garamond', serif; /* Google Font для заголовков */
-    color: #d4af37; /* Золотистый цвет */
+    font-family: 'Cormorant Garamond', serif;
+    color: #d4af37;
     text-align: center;
   }
   
@@ -31,9 +30,9 @@ body {
   }
   
   .site-header {
-      background-color: #1e1e1e; /* Темно-серый фон для шапки */
+      background-color: #1e1e1e;
       padding: 15px 0;
-      border-bottom: 1px solid #333; /*  Разделитель*/
+      border-bottom: 1px solid #333;
       margin-bottom: 1rem;
   }
   
@@ -82,10 +81,7 @@ body {
     text-align: center;
   }
   
-  #spread-type,
-  #question,
-  #draw-cards,
-  #sphere-select { /* Добавили #sphere-select */
+  #spread-type, #question, #draw-cards, #sphere-select { /* Добавили #sphere-select */
       margin-bottom: 15px;
       padding: 10px;
       border: 1px solid #555;
@@ -160,6 +156,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     opacity: 0;
     animation: fadeIn 0.5s ease-out forwards;
+    user-select: none;
   }
   
   .card:hover {
@@ -208,6 +205,30 @@ body {
     margin-top: 0.5em;
     margin-bottom: 0.2em;
   }
+  .card-interpretation ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0; /* Добавили отступы сверху и снизу */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;  /*  Увеличили промежутки */
+    justify-content: center;
+}
+
+.card-interpretation li {
+    /* background-color: #333;  Убрали общий фон */
+    color: #eee;
+    padding: 4px 8px;  /*  Уменьшили padding */
+    border-radius: 6px; /*  Увеличили скругление */
+    font-size: 0.85em;  /*  Уменьшили размер */
+    /* Добавляем фон для каждого слова (разные цвета) */
+    background-color: #4a2c5e; /*  Основной цвет (темно-фиолетовый) */
+    /*  Можно добавить разные цвета для разных слов,
+        используя :nth-child (псевдокласс):  */
+     /*   background-color: hsl(276, 34%, 35%);*/
+
+}
+
   
   /* Стили для раздела "О Таро" */
   #tarot-info {
