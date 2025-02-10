@@ -1,4 +1,4 @@
-// Загрузка данных о картах
+// Загрузка данных о картах (без изменений)
 async function loadCardData() {
     try {
         const response = await fetch('data/cards.json');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loading-indicator').style.display = 'none';
 
         if (cardData) {
-            restoreReading(); // Пытаемся восстановить расклад при загрузке
+            // restoreReading(); // Пытаемся восстановить расклад при загрузке - убрали, т.к. не сохраняем
             showTab('tarot'); // Показываем вкладку "Гадание Таро" по умолчанию
             displayCardOfTheDay(); // Отображаем карту дня
         }
@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.dataset.tab;
-             //Перед переключением сохраняем, если текущая вкладка tarot
-            if(document.querySelector('.tab-button.active').dataset.tab === "tarot"){
-              saveReading();
-            }
+             //Перед переключением сохраняем, если текущая вкладка tarot - убрали, т.к. не сохраняем
+            // if(document.querySelector('.tab-button.active').dataset.tab === "tarot"){
+            //   saveReading();
+            // }
             showTab(tabId);
 
         });
@@ -104,14 +104,10 @@ function showTab(tabId) {
     // Добавляем класс active к соответствующей кнопке
     document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
 
-    //Особый случай для карты дня
-    if(tabId === "cotd" && cardData){
-        displayCardOfTheDay();
-    }
     //Для таро тоже особый случай
     if(tabId === "tarot" && cardData){
-      restoreReading(); // Восстанавливаем расклад
-      shuffleDeck();  // "Перемешиваем" карты
+      // restoreReading(); // Восстанавливаем расклад - убрали
+      // shuffleDeck();  // "Перемешиваем" карты - убрали
     }
       //Добавил скролл к элементу
     const content = document.getElementById('content');
@@ -132,55 +128,69 @@ function getRandomCards(numCards) {
     return shuffledCards;
 }
 
-// Функция отображения карт (с задержкой)
-//  Изменено:  теперь карты изначально рубашкой вверх
+// Функция отображения карт (с задержкой) и анимацией
 function displayCards(cardIndices, spreadType) {
-    const cardsContainer = document.getElementById('cards-container');
-    cardsContainer.innerHTML = ''; // Очищаем
+  const cardsContainer = document.getElementById('cards-container');
+  cardsContainer.innerHTML = ''; // Очищаем
 
-    cardIndices.forEach((cardIndex, position) => {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('card');
-        // !!!  Изначально показываем "рубашку"  !!!
-        cardDiv.style.backgroundImage = `url(images/back.jpg)`; //  <--  ИЗМЕНЕНИЕ
-        cardDiv.dataset.cardIndex = cardIndex; //  Сохраняем индекс карты
-        cardDiv.dataset.isReversed = Math.random() < 0.3; // Случайно переворачиваем
-        cardDiv.style.animationDelay = `${position * 0.2}s`;
-
-        // Добавляем обработчик клика для переворота
-        cardDiv.addEventListener('click', flipCard);  //  <--  ИЗМЕНЕНИЕ (отдельная функция)
-        cardsContainer.appendChild(cardDiv);
-    });
-}
-
-//  НОВАЯ ФУНКЦИЯ:  Переворот карты
-function flipCard(event) {
-    const cardDiv = event.currentTarget; //  Получаем элемент, по которому кликнули
-     // Проверяем, не перевернута ли уже карта
-    if (cardDiv.classList.contains('flipped')) {
-        return; // Если уже перевернута, выходим
-    }
-
-    const cardIndex = parseInt(cardDiv.dataset.cardIndex);
-    const isReversed = cardDiv.dataset.isReversed === 'true'; //  Получаем значение из data
-
-    //  Меняем изображение
-    cardDiv.style.backgroundImage = `url(images/${cardIndex}.jpg)`;
-
-    //  Добавляем/удаляем класс reversed
-    if (isReversed) {
+  //  Если контейнер карт отсутствует (например, мы не на вкладке "Гадание Таро"),
+  //  то не делаем ничего
+  if (!cardsContainer) {
+   return;
+  }
+  cardIndices.forEach((cardIndex, position) => {
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    //  Устанавливаем фоновое изображение рубашки
+    cardDiv.style.backgroundImage = `url(images/back.jpg)`; // <-- Рубашка!
+    cardDiv.dataset.cardIndex = cardIndex;
+    cardDiv.dataset.isReversed = Math.random() < 0.3; // Случайный переворот
+    cardDiv.dataset.spreadType = spreadType;//Сохраняем тип расклада
+     //  Если карта перевернута, сразу добавляем класс reversed
+     if (cardDiv.dataset.isReversed === 'true') { // <--  ИЗМЕНЕНИЕ!
         cardDiv.classList.add('reversed');
-    } else {
-        cardDiv.classList.remove('reversed'); //  На всякий случай
-    }
-     //Отображаем толкование
-    //Вызываем функцию showCardInterpretation, позицию пока не учитываем
-    showCardInterpretation(cardIndex, isReversed, 0,  document.getElementById('spread-type').value);
-    cardDiv.classList.add('flipped'); //Добавляем класс, чтобы больше не переворачивалась
+     }
+    //  Анимацию shuffle добавляем, но с задержкой
+    cardDiv.style.animation = `shuffle 0.2s ease-in-out ${position * 0.1}s`;
+    cardDiv.style.animationFillMode = 'backwards';
+
+
+    cardDiv.addEventListener('click', flipCard);
+    cardsContainer.appendChild(cardDiv);
+  });
 }
+
+//  Функция переворота карты
+function flipCard(event) {
+    const cardDiv = event.currentTarget;
+    const cardIndex = parseInt(cardDiv.dataset.cardIndex);
+    let isReversed = cardDiv.dataset.isReversed === 'true'; //  Берем из data-атрибута
+    const spreadType = cardDiv.dataset.spreadType;
+  
+     //  Если карта уже перевернута лицевой стороной вверх, просто отображаем толкование
+     if (cardDiv.style.backgroundImage.includes(cardIndex + '.jpg')) {
+          showCardInterpretation(cardIndex, isReversed, spreadType); // <-- spreadType
+          return; //  Выходим из функции
+      }
+    //  Меняем изображение на лицевую сторону
+    cardDiv.style.backgroundImage = `url(images/${cardIndex}.jpg)`;
+  
+    //  Меняем класс reversed (без смены картинки)
+      if (!isReversed) { // <--  Меняем на противоположное
+          cardDiv.classList.remove('reversed');
+      }
+       else{
+          cardDiv.classList.add('reversed');
+      }
+     //Меняем значение
+     cardDiv.dataset.isReversed = !isReversed;
+      // Вызываем функцию showCardInterpretation, позицию и spreadType передаём
+    showCardInterpretation(cardIndex, !isReversed, spreadType); // <--  !isReversed и spreadType
+  }
+
 
 //  измененная функция showCardInterpretation
-function showCardInterpretation(cardIndex, isReversed, position, spreadType) {
+function showCardInterpretation(cardIndex, isReversed, spreadType) { // Убрали position
     const interpretationDiv = document.getElementById('interpretation');
     interpretationDiv.innerHTML = '';
 
@@ -194,16 +204,32 @@ function showCardInterpretation(cardIndex, isReversed, position, spreadType) {
     cardInterpretationDiv.classList.add('card-interpretation');
 
     let title = `<h3>${card.name}</h3>`;
+    let position = -1; // Инициализируем
+
+    //  Добавляем заголовок в зависимости от расклада и позиции
     if (spreadType === 'three-card') {
         const positions = ['Прошлое', 'Настоящее', 'Будущее'];
-        title = `<h3>${positions[position]}: ${card.name}</h3>`;
-    } else if (spreadType === "celtic-cross") {
+        //Находим позицию карты
+        position = document.getElementById('cards-container').querySelectorAll('.card').length == 3 ?
+        [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
+
+         //  Добавим проверку на случай, если позиция не найдена (хотя такого быть не должно)
+        if (position !== -1 && position < positions.length) {
+            title = `<h3>${positions[position]}: ${card.name}</h3>`;
+        }
+    } else if (spreadType === 'celtic-cross') {
         const positions = [
             "Настоящее", "Препятствие", "Основа", "Прошлое",
             "Возможности", "Будущее", "Внутреннее состояние", "Внешние влияния", "Надежды и страхи", "Исход"
         ];
-        title = `<h3>${positions[position]}: ${card.name}</h3>`;
+        position = document.getElementById('cards-container').querySelectorAll('.card').length == 10 ?
+        [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
+
+        if (position !== -1 && position < positions.length) {
+            title = `<h3>${positions[position]}: ${card.name}</h3>`;
+        }
     }
+    //  Для "одной карты" и других случаев оставляем просто название карты
 
     cardInterpretationDiv.innerHTML = title;
 
@@ -260,22 +286,6 @@ function getSphereLabel(sphere) {
     }
 }
 
-// Функция "перемешивания" колоды
-function shuffleDeck() {
-    const cardsContainer = document.getElementById('cards-container');
-    if(!cardsContainer) return;  //Если не страница с гаданием
-    cardsContainer.innerHTML = '';
-
-    for (let i = 0; i < 15; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('card');
-        const randomCardBack = Math.floor(Math.random() * 3);
-        cardDiv.style.backgroundImage = `url(images/back.jpg)`; //  Используем одну рубашку
-        cardDiv.style.animation = `shuffle 0.2s ease-in-out ${i * 0.03}s`;
-        cardsContainer.appendChild(cardDiv);
-    }
-}
-
 // Обработчик нажатия кнопки "Тянуть карты"
 const handleDrawCards = () => {
     const spreadType = document.getElementById('spread-type').value;
@@ -290,19 +300,12 @@ const handleDrawCards = () => {
 
     const cardIndices = getRandomCards(numCards);
 
-    shuffleDeck();
+    //  ВЫЗЫВАЕМ displayCards *СРАЗУ* (без setTimeout)
+    displayCards(cardIndices, spreadType);
+    document.getElementById('interpretation').innerHTML = '';
 
-    setTimeout(() => {
-        displayCards(cardIndices, spreadType);
-        document.getElementById('interpretation').innerHTML = '';
-
-        // Показываем блок #reading-result
-        document.getElementById('reading-result').style.display = 'block'; //  Или 'flex'
-
-        //Сохраняем расклад
-        saveReading(cardIndices, spreadType, sphere);
-
-    }, 1000);
+    // Показываем блок #reading-result
+    document.getElementById('reading-result').style.display = 'block'; //  Или 'flex'
 };
 
 
@@ -504,46 +507,5 @@ function checkTimeDivination() {
         hourDivinationDiv.textContent = divinationText;
     } else {
         hourDivinationDiv.textContent = "Для этого времени нет толкования.";
-    }
-}
-
-// --- Функции для сохранения и восстановления расклада ---
-
-function saveReading(cardIndices, spreadType, sphere) {
-  if(!cardIndices) return; //Если не передали карты, то выходим
-    const readingData = {
-        cardIndices: cardIndices,
-        spreadType: spreadType,
-        sphere: sphere,
-        timestamp: Date.now() //  Добавляем метку времени (для возможной очистки старых данных)
-    };
-    localStorage.setItem('tarotReading', JSON.stringify(readingData));
-}
-
-function restoreReading() {
-    const readingDataString = localStorage.getItem('tarotReading');
-    if (readingDataString) {
-        const readingData = JSON.parse(readingDataString);
-
-        // Проверяем, что данные не устарели (например, прошло не больше суток)
-        const now = Date.now();
-        const maxAge = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
-        if (now - readingData.timestamp < maxAge) {
-             // Восстанавливаем расклад
-            displayCards(readingData.cardIndices, readingData.spreadType);
-            // showCardInterpretation(readingData.cardIndices[0], false, 0, readingData.spreadType);
-            //  !!!  УБИРАЕМ ВЫЗОВ showCardInterpretation  !!!
-
-            // Устанавливаем выбранный расклад
-            document.getElementById('spread-type').value = readingData.spreadType;
-
-            // Устанавливаем выбранную сферу
-            document.getElementById('sphere-select').value = readingData.sphere;
-            // Показываем блок
-            document.getElementById('reading-result').style.display = 'block';
-        } else {
-            // Данные устарели, удаляем их
-            localStorage.removeItem('tarotReading');
-        }
     }
 }

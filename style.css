@@ -154,19 +154,38 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    animation: fadeIn 0.5s ease-out forwards;
     user-select: none;
   }
+
+  .card.flipped {
+    animation-fill-mode: forwards; /* Чтобы оставалось в конечном состоянии */
+}
   
   .card:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
   }
   
+  @keyframes flip {
+    from {
+      transform: rotateY(0deg); /*  Начинаем с рубашки */
+    }
+    to {
+      transform: rotateY(180deg); /*  Поворачиваем на 180 градусов */
+    }
+  }
+  /*Для перевернутых карт тоже, но наоборот*/
+  @keyframes flipReversed {
+      from {
+          transform: rotateY(180deg) rotate(180deg); /*  Начинаем с перевернутой*/
+      }
+      to {
+          transform: rotateY(0deg) rotate(180deg); /* Переворачиваем  */
+      }
+  }
   .card.reversed {
-      transform: rotate(180deg);
-      animation: fadeInReversed 0.5s ease-out forwards;
+      transform: rotate(180deg); /*  Уже повернута на 180 градусов */
+      animation: flipReversed 0.5s;
   }
   
   /* Анимации */
