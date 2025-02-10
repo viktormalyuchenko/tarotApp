@@ -1,21 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- ... (мета-теги, title, favicon, Google Fonts, Font Awesome, style.css) ... -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Гадания Таро онлайн: получите предсказание бесплатно</title>
-    <meta name="description" content="Бесплатные онлайн гадания на картах Таро, карта дня, гадание по часам.">
-    <meta name="keywords" content="гадания таро, таро онлайн, гадание на картах таро, расклады таро, толкование карт таро, карта дня, гадание по часам, одинаковые цифры на часах">
+    <title>Гадания Таро онлайн: расклады на картах, карта дня, толкование</title>
+    <meta name="description" content="Бесплатные онлайн гадания на картах Таро: расклады на одну, три карты и Кельтский крест. Узнайте толкование карт, получите совет. Карта дня и гадание по часам.">
+    <meta name="keywords" content="гадания таро, таро онлайн, гадание на картах таро, расклады таро, толкование карт, карта дня, гадание по часам, одинаковые цифры на часах">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Google Fonts -->
-     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome (если будете использовать иконки) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Open Graph (для превью в соцсетях) -->
+    <meta property="og:title" content="Гадания Таро онлайн">
+    <meta property="og:description" content="Бесплатные онлайн гадания на картах Таро: расклады, карта дня, толкования.">
+    <meta property="og:image" content="https://viktormalyuchenko.github.io/tarotApp/images/og-image.png">
+    <meta property="og:url" content="https://viktormalyuchenko.github.io/tarotApp/">
+    <meta property="og:type" content="website">
+
+    <!--  Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Гадания Таро онлайн">
+    <meta name="twitter:description" content="Бесплатные онлайн гадания на картах Таро.">
+    <meta name="twitter:image" content="https://viktormalyuchenko.github.io/tarotApp/images/og-image.png">
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ 
+    ym(99841001, "init", {
+         clickmap:true,
+         trackLinks:true,
+         accurateTrackBounce:true
+    });
+ </script>
+ <noscript><div><img src="https://mc.yandex.ru/watch/99841001" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+ <!-- /Yandex.Metrika counter -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://viktormalyuchenko.github.io/tarotApp/",
+      "name": "Мистический Портал Таро",
+      "description": "Бесплатные онлайн гадания на картах Таро, карта дня, гадание по часам."
+    }
+    
+    </script>
 
 </head>
 <body>
@@ -60,21 +96,22 @@
                             <option value="spirituality">Духовность</option>
                         </select>
                         <button id="draw-cards">Тянуть карты</button>
+                        <button id="generate-question">Случайный вопрос</button>
                     </section>
 
-                    <section id="reading-result">
+                    <section id="reading-result" style="display: none;">
                         <h2>Результат гадания:</h2>
                         <div id="cards-container">
-                            <!-- Карты будут здесь -->
+                            <!-- Карты -->
                         </div>
                         <div id="interpretation">
-                            <!-- Толкования будут здесь -->
+                            <!-- Толкования -->
                         </div>
                     </section>
                 </section>
 
                 <section id="cotd-tab" class="tab-content">
-                    <!-- Секция карты дня (как раньше) -->
+                    <!-- Секция карты дня -->
                    <section id="card-of-the-day">
                         <h2>Карта дня</h2>
                         <div id="cotd-container"></div>
@@ -83,10 +120,10 @@
                 </section>
 
                 <section id="time-tab" class="tab-content">
-                    <!-- Секция гадания по часам (как раньше) -->
+                    <!-- Секция гадания по часам -->
                    <section id="time-divination">
                         <h2>Гадание по часам</h2>
-                        <p>Если вы увидели на часах одинаковые или зеркальные цифры, это может быть знаком! Введите время, которое вы видели:</p>
+                        <p>Введите время, которое вы видели:</p>
                         <input type="text" id="time-input" placeholder="ЧЧММ" pattern="([01]?[0-9]|2[0-3]):?[0-5][0-9]" maxlength="5">
                         <button id="time-divination-button">Узнать значение</button>
                         <div id="hour-divination"></div>
