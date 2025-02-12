@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.dataset.tab;
-             //Перед переключением сохраняем, если текущая вкладка tarot - убрали, т.к. не сохраняем
+            //Перед переключением сохраняем, если текущая вкладка tarot - убрали, т.к. не сохраняем
             // if(document.querySelector('.tab-button.active').dataset.tab === "tarot"){
             //   saveReading();
             // }
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-      // Запускаем функцию для гадания по часам и ставим интервал
+    // Запускаем функцию для гадания по часам и ставим интервал
     checkTimeDivination();
     setInterval(checkTimeDivination, 60000);
 
@@ -94,7 +94,7 @@ function showTab(tabId) {
     });
 
     // Убираем класс active у всех кнопок
-     document.querySelectorAll('.tab-button').forEach(btn => {
+    document.querySelectorAll('.tab-button').forEach(btn => {
         btn.classList.remove('active');
     });
 
@@ -105,14 +105,14 @@ function showTab(tabId) {
     document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
 
     //Для таро тоже особый случай
-    if(tabId === "tarot" && cardData){
-      // restoreReading(); // Восстанавливаем расклад - убрали
-      // shuffleDeck();  // "Перемешиваем" карты - убрали
+    if (tabId === "tarot" && cardData) {
+        // restoreReading(); // Восстанавливаем расклад - убрали
+        // shuffleDeck();  // "Перемешиваем" карты - убрали
     }
-      //Добавил скролл к элементу
+    //Добавил скролл к элементу
     const content = document.getElementById('content');
     if (content) {
-      content.scrollIntoView({ behavior: 'smooth' });
+        content.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
@@ -130,34 +130,34 @@ function getRandomCards(numCards) {
 
 // Функция отображения карт (с задержкой) и анимацией
 function displayCards(cardIndices, spreadType) {
-  const cardsContainer = document.getElementById('cards-container');
-  cardsContainer.innerHTML = ''; // Очищаем
+    const cardsContainer = document.getElementById('cards-container');
+    cardsContainer.innerHTML = ''; // Очищаем
 
-  //  Если контейнер карт отсутствует (например, мы не на вкладке "Гадание Таро"),
-  //  то не делаем ничего
-  if (!cardsContainer) {
-   return;
-  }
-  cardIndices.forEach((cardIndex, position) => {
-    const cardDiv = document.createElement('div');
-    cardDiv.classList.add('card');
-    //  Устанавливаем фоновое изображение рубашки
-    cardDiv.style.backgroundImage = `url(images/back.jpg)`; // <-- Рубашка!
-    cardDiv.dataset.cardIndex = cardIndex;
-    cardDiv.dataset.isReversed = Math.random() < 0.3; // Случайный переворот
-    cardDiv.dataset.spreadType = spreadType;//Сохраняем тип расклада
-     //  Если карта перевернута, сразу добавляем класс reversed
-     if (cardDiv.dataset.isReversed === 'true') { // <--  ИЗМЕНЕНИЕ!
-        cardDiv.classList.add('reversed');
-     }
-    //  Анимацию shuffle добавляем, но с задержкой
-    cardDiv.style.animation = `shuffle 0.2s ease-in-out ${position * 0.1}s`;
-    cardDiv.style.animationFillMode = 'backwards';
+    //  Если контейнер карт отсутствует (например, мы не на вкладке "Гадание Таро"),
+    //  то не делаем ничего
+    if (!cardsContainer) {
+        return;
+    }
+    cardIndices.forEach((cardIndex, position) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('card');
+        //  Устанавливаем фоновое изображение рубашки
+        cardDiv.style.backgroundImage = `url(images/back.jpg)`; // <-- Рубашка!
+        cardDiv.dataset.cardIndex = cardIndex;
+        cardDiv.dataset.isReversed = Math.random() < 0.3; // Случайный переворот
+        cardDiv.dataset.spreadType = spreadType;//Сохраняем тип расклада
+        //  Если карта перевернута, сразу добавляем класс reversed
+        if (cardDiv.dataset.isReversed === 'true') { // <--  ИЗМЕНЕНИЕ!
+            cardDiv.classList.add('reversed');
+        }
+        //  Анимацию shuffle добавляем, но с задержкой
+        cardDiv.style.animation = `shuffle 0.2s ease-in-out ${position * 0.1}s`;
+        cardDiv.style.animationFillMode = 'backwards';
 
 
-    cardDiv.addEventListener('click', flipCard);
-    cardsContainer.appendChild(cardDiv);
-  });
+        cardDiv.addEventListener('click', flipCard);
+        cardsContainer.appendChild(cardDiv);
+    });
 }
 
 //  Функция переворота карты
@@ -166,27 +166,27 @@ function flipCard(event) {
     const cardIndex = parseInt(cardDiv.dataset.cardIndex);
     let isReversed = cardDiv.dataset.isReversed === 'true'; //  Берем из data-атрибута
     const spreadType = cardDiv.dataset.spreadType;
-  
-     //  Если карта уже перевернута лицевой стороной вверх, просто отображаем толкование
-     if (cardDiv.style.backgroundImage.includes(cardIndex + '.jpg')) {
-          showCardInterpretation(cardIndex, isReversed, spreadType); // <-- spreadType
-          return; //  Выходим из функции
-      }
+
+    //  Если карта уже перевернута лицевой стороной вверх, просто отображаем толкование
+    if (cardDiv.style.backgroundImage.includes(cardIndex + '.jpg')) {
+        showCardInterpretation(cardIndex, isReversed, spreadType); // <-- spreadType
+        return; //  Выходим из функции
+    }
     //  Меняем изображение на лицевую сторону
     cardDiv.style.backgroundImage = `url(images/${cardIndex}.jpg)`;
-  
+
     //  Меняем класс reversed (без смены картинки)
-      if (!isReversed) { // <--  Меняем на противоположное
-          cardDiv.classList.remove('reversed');
-      }
-       else{
-          cardDiv.classList.add('reversed');
-      }
-     //Меняем значение
-     cardDiv.dataset.isReversed = !isReversed;
-      // Вызываем функцию showCardInterpretation, позицию и spreadType передаём
+    if (!isReversed) { // <--  Меняем на противоположное
+        cardDiv.classList.remove('reversed');
+    }
+    else {
+        cardDiv.classList.add('reversed');
+    }
+    //Меняем значение
+    cardDiv.dataset.isReversed = !isReversed;
+    // Вызываем функцию showCardInterpretation, позицию и spreadType передаём
     showCardInterpretation(cardIndex, !isReversed, spreadType); // <--  !isReversed и spreadType
-  }
+}
 
 
 //  измененная функция showCardInterpretation
@@ -211,9 +211,9 @@ function showCardInterpretation(cardIndex, isReversed, spreadType) { // Убра
         const positions = ['Прошлое', 'Настоящее', 'Будущее'];
         //Находим позицию карты
         position = document.getElementById('cards-container').querySelectorAll('.card').length == 3 ?
-        [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
+            [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
 
-         //  Добавим проверку на случай, если позиция не найдена (хотя такого быть не должно)
+        //  Добавим проверку на случай, если позиция не найдена (хотя такого быть не должно)
         if (position !== -1 && position < positions.length) {
             title = `<h3>${positions[position]}: ${card.name}</h3>`;
         }
@@ -223,7 +223,7 @@ function showCardInterpretation(cardIndex, isReversed, spreadType) { // Убра
             "Возможности", "Будущее", "Внутреннее состояние", "Внешние влияния", "Надежды и страхи", "Исход"
         ];
         position = document.getElementById('cards-container').querySelectorAll('.card').length == 10 ?
-        [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
+            [...document.getElementById('cards-container').querySelectorAll('.card')].findIndex(div => parseInt(div.dataset.cardIndex) === cardIndex) : -1;
 
         if (position !== -1 && position < positions.length) {
             title = `<h3>${positions[position]}: ${card.name}</h3>`;
@@ -233,56 +233,56 @@ function showCardInterpretation(cardIndex, isReversed, spreadType) { // Убра
 
     cardInterpretationDiv.innerHTML = title;
 
-      //  Получаем толкование в зависимости от положения карты
+    //  Получаем толкование в зависимости от положения карты
     const meanings = isReversed ? card.meanings.reversed : card.meanings.upright;
 
-      //  Определяем выбранную сферу
+    //  Определяем выбранную сферу
     const selectedSphere = document.getElementById('sphere-select').value;
 
 
-      //  Выводим общее значение
+    //  Выводим общее значение
     if (meanings.general) {
-      cardInterpretationDiv.innerHTML += `<h4>Общее значение:</h4><p>${meanings.general}</p>`;
+        cardInterpretationDiv.innerHTML += `<h4>Общее значение:</h4><p>${meanings.general}</p>`;
     }
 
-      //  Выводим значение для выбранной сферы
-      // Добавили проверку, что сфера не general, чтобы не выводить дважды
+    //  Выводим значение для выбранной сферы
+    // Добавили проверку, что сфера не general, чтобы не выводить дважды
     if (meanings[selectedSphere] && selectedSphere !== 'general') {
-      cardInterpretationDiv.innerHTML += `<h4>${getSphereLabel(selectedSphere)}:</h4><p>${meanings[selectedSphere]}</p>`;
+        cardInterpretationDiv.innerHTML += `<h4>${getSphereLabel(selectedSphere)}:</h4><p>${meanings[selectedSphere]}</p>`;
     }
 
-      //  Выводим ключевые слова (красиво оформленные)
+    //  Выводим ключевые слова (красиво оформленные)
     if (meanings.keywords && meanings.keywords.length > 0) {
-      cardInterpretationDiv.innerHTML += `<h4>Ключевые слова:</h4><ul>`;
-      meanings.keywords.forEach(keyword => {
-        cardInterpretationDiv.innerHTML += `<li>${keyword}</li>`;
-      });
-      cardInterpretationDiv.innerHTML += `</ul>`;
+        cardInterpretationDiv.innerHTML += `<h4>Ключевые слова:</h4><ul>`;
+        meanings.keywords.forEach(keyword => {
+            cardInterpretationDiv.innerHTML += `<li>${keyword}</li>`;
+        });
+        cardInterpretationDiv.innerHTML += `</ul>`;
     }
 
-      //  Выводим совет, предостережение и аффирмацию
+    //  Выводим совет, предостережение и аффирмацию
     if (meanings.advice) {
-      cardInterpretationDiv.innerHTML += `<h4>Совет:</h4><p>${meanings.advice}</p>`;
+        cardInterpretationDiv.innerHTML += `<h4>Совет:</h4><p>${meanings.advice}</p>`;
     }
     if (meanings.warning) {
-      cardInterpretationDiv.innerHTML += `<h4>Предостережение:</h4><p>${meanings.warning}</p>`;
+        cardInterpretationDiv.innerHTML += `<h4>Предостережение:</h4><p>${meanings.warning}</p>`;
     }
     if (meanings.affirmation) {
-      cardInterpretationDiv.innerHTML += `<h4>Аффирмация:</h4><p>${meanings.affirmation}</p>`;
+        cardInterpretationDiv.innerHTML += `<h4>Аффирмация:</h4><p>${meanings.affirmation}</p>`;
     }
 
     interpretationDiv.appendChild(cardInterpretationDiv);
-  }
+}
 
 // Вспомогательная функция для получения заголовков
 function getSphereLabel(sphere) {
     switch (sphere) {
-      case 'love': return 'Любовь и отношения';
-      case 'work': return 'Работа и карьера';
-      case 'finance': return 'Финансы';
-      case 'health': return 'Здоровье';
-      case 'spirituality': return 'Духовность';
-      default: return ''; //  Не должно произойти, но на всякий случай
+        case 'love': return 'Любовь и отношения';
+        case 'work': return 'Работа и карьера';
+        case 'finance': return 'Финансы';
+        case 'health': return 'Здоровье';
+        case 'spirituality': return 'Духовность';
+        default: return ''; //  Не должно произойти, но на всякий случай
     }
 }
 
@@ -372,7 +372,7 @@ function showCardOfTheDayInterpretation(cardIndex, isReversed) {
     //  Добавляем толкование!
     const meanings = isReversed ? card.meanings.reversed : card.meanings.upright;
 
-     // Добавляем разделы с заголовками
+    // Добавляем разделы с заголовками
     if (meanings.general) {
         cardInterpretationDiv.innerHTML += `<h4>Общее значение:</h4><p>${meanings.general}</p>`;
     }
@@ -387,8 +387,8 @@ function showCardOfTheDayInterpretation(cardIndex, isReversed) {
     }
     if (meanings.health) {
         cardInterpretationDiv.innerHTML += `<h4>Здоровье:</h4><p>${meanings.health}</p>`;
-     }
-        if (meanings.spirituality) {
+    }
+    if (meanings.spirituality) {
         cardInterpretationDiv.innerHTML += `<h4>Духовность:</h4><p>${meanings.spirituality}</p>`;
     }
 
@@ -408,7 +408,7 @@ function showCardOfTheDayInterpretation(cardIndex, isReversed) {
     }
     if (meanings.affirmation) {
         cardInterpretationDiv.innerHTML += `<h4>Аффирмация:</h4><p>${meanings.affirmation}</p>`;
-     }
+    }
     cotdInterpretation.appendChild(cardInterpretationDiv); // Добавляем в cotdInterpretation
 
 }
@@ -497,9 +497,9 @@ function checkTimeDivination() {
     }
 
     //Убираем ведущие нули из часов для корректного поиска в hourDivination
-     const [hours, minutes] = timeStr.split(":");
-     timeStr = `${parseInt(hours, 10)}:${minutes}`;
-     timeStr = timeStr.padStart(5,'0'); //Добавляем обратно нули
+    const [hours, minutes] = timeStr.split(":");
+    timeStr = `${parseInt(hours, 10)}:${minutes}`;
+    timeStr = timeStr.padStart(5, '0'); //Добавляем обратно нули
 
     const divinationText = hourDivination[timeStr];
 
